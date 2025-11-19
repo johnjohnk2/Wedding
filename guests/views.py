@@ -12,7 +12,7 @@ from django.views.generic import ListView
 from guests import csv_import
 from guests.invitation import get_invitation_context, INVITATION_TEMPLATE, guess_party_by_invite_id_or_404, \
     send_invitation_email
-from guests.models import Guest, MEALS, Party
+from guests.models import Guest, Party
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
     SAVE_THE_DATE_CONTEXT_MAP
 
@@ -37,14 +37,6 @@ def dashboard(request):
     parties_with_unopen_invites = parties_with_pending_invites.filter(invitation_opened=None)
     parties_with_open_unresponded_invites = parties_with_pending_invites.exclude(invitation_opened=None)
     attending_guests = Guest.objects.filter(is_attending=True)
-    guests_without_meals = attending_guests.filter(
-        is_child=False
-    ).filter(
-        Q(meal__isnull=True) | Q(meal='')
-    ).order_by(
-        'party__category', 'first_name'
-    )
-    meal_breakdown = attending_guests.exclude(meal=None).values('meal').annotate(count=Count('*'))
     category_breakdown = attending_guests.values('party__category').annotate(count=Count('*'))
     total_mairie = Party.objects.aggregate(Sum('nb_mairie'))['nb_mairie__sum'] or 0
     total_soiree = Party.objects.aggregate(Sum('nb_soiree'))['nb_soiree__sum'] or 0
@@ -56,12 +48,10 @@ def dashboard(request):
         'not_coming_guests': Guest.objects.filter(is_attending=False).count(),
         'pending_invites': parties_with_pending_invites.count(),
         'pending_guests': Guest.objects.filter(party__is_invited=True, is_attending=None).count(),
-        'guests_without_meals': guests_without_meals,
         'parties_with_unopen_invites': parties_with_unopen_invites,
         'parties_with_open_unresponded_invites': parties_with_open_unresponded_invites,
         'unopened_invite_count': parties_with_unopen_invites.count(),
         'total_invites': Party.objects.filter(is_invited=True).count(),
-        'meal_breakdown': meal_breakdown,
         'category_breakdown': category_breakdown,
         'guestlist': Guest.objects.filter(is_attending=True),
         'notcoming': Guest.objects.filter(is_attending=False),
@@ -100,20 +90,20 @@ def invitation(request, invite_id):
 
         party.nb_mairie = nb_mairie
         party.nb_soiree = nb_soiree
+        party.is_attending = party.any_guests_attending
         party.save()
 
         # puis tu continues comme avant (redirection vers la page de confirmation)
-        return redirect('invitation-thanks', invite_id=party.invitation_id)
+        return HttpResponseRedirect(reverse('rsvp-confirm', args=[invite_id]))
     return render(request, template_name='guests/invitation.html', context={
         'party': party,
         'guests': guests,
-        'meals': MEALS,
         'couple_name' : settings.BRIDE_AND_GROOM,
         'website_url': settings.WEDDING_WEBSITE_URL,        
     })
 
 
-InviteResponse = namedtuple('InviteResponse', ['guest_pk', 'is_attending', 'meal'])
+InviteResponse = namedtuple('InviteResponse', ['guest_pk', 'is_attending'])
 
 
 def _parse_invite_params(params):
@@ -124,14 +114,9 @@ def _parse_invite_params(params):
             response = responses.get(pk, {})
             response['attending'] = True if value == 'yes' else False
             responses[pk] = response
-        elif param.startswith('meal'):
-            pk = int(param.split('-')[-1])
-            response = responses.get(pk, {})
-            response['meal'] = value
-            responses[pk] = response
 
     for pk, response in responses.items():
-        yield InviteResponse(pk, response['attending'], response.get('meal', None))
+        yield InviteResponse(pk, response['attending'])
 
 
 def rsvp_confirm(request, invite_id=None):
