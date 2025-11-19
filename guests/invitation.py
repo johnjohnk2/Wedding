@@ -4,22 +4,15 @@ from datetime import datetime
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
-from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from guests.models import Party, MEALS
+from guests.models import Party
 
 INVITATION_TEMPLATE = 'guests/email_templates/invitation.html'
 
 
 def guess_party_by_invite_id_or_404(invite_id):
-    try:
-        return Party.objects.get(invitation_id=invite_id)
-    except Party.DoesNotExist:
-        if settings.DEBUG:
-            # in debug mode allow access by ID
-            return Party.objects.get(id=int(invite_id))
-        else:
-            raise Http404()
+    return get_object_or_404(Party, invitation_id=invite_id)
 
 
 def get_invitation_context(party):
@@ -32,7 +25,6 @@ def get_invitation_context(party):
         'preheader_text': "You are invited!",
         'invitation_id': party.invitation_id,
         'party': party,
-        'meals': MEALS,
     }
 
 

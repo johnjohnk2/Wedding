@@ -2,24 +2,46 @@ body {
     background: linear-gradient(
       rgba(255, 255, 255, 0.6),
       rgba(255, 255, 255, 0.6)
-    ), url('../images/lions-head-medium.jpg') no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    ), url('../images/jj.jpg') no-repeat center center;
+    background-size: cover; /* sera écrasé par les media queries */
 }
 
+/* Conteneur principal */
 #main {
     background-color: #fff;
     padding-bottom: 2em;
     margin-top: 1em;
     margin-bottom: 2em;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
     border-radius: 10px;
     opacity: 0.8;
 }
 
 #footer {
     padding-bottom: 30px;
+}
+
+@media (max-width: 767px) {
+    body {
+        background-size: 80%;          /* ⬅️ réduit encore l’image */
+        background-position: center bottom; /* ⬅️ la fait descendre */
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-color: #f2f2f2;
+    }
+
+    #main {
+        margin-top: 0.5em;   /* ⬅️ remonte un peu le bloc blanc */
+    }
+}
+
+
+/* ---- DESKTOP ---- */
+@media (min-width: 768px) {
+    body {
+        background-size: 80%;          /* même taille */
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-color: #f2f2f2;
+    }
 }

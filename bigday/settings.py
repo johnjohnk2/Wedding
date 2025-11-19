@@ -31,17 +31,20 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY', default='u7!-y4k1c6b44q507nr_l+c^12o7ur++cpzyn!$65w^!gum@h%')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Set to "console" for console output of emails or to "smtp" to send real mails
 MAIL_BACKEND = "console"
 
-ALLOWED_HOSTS = ["my_website_url"]
+ALLOWED_HOSTS = ["wedding.johnjohnk.duckdns.org", "localhost"]
 CSRF_TRUSTED_ORIGINS = [
     "http://example.com",
     'https://127.0.0.1'
 ]
-
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+USE_X_FORWARDED_HOST = True
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 
@@ -96,7 +99,7 @@ WSGI_APPLICATION = 'bigday.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR,'data', 'db.sqlite3'),
     },
     # if you want to use the postgres database just uncomment the following lines and comment out the sqlite3 lines
     # 'default': {

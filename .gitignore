@@ -2,12 +2,10 @@
 *.sw[op]
 .idea*
 *.pyc
-localsettings.py
-*.sqlite3
 static_root
 _working/
-data/
-static/
 guests/static/save-the-date/images/archive/
 .DS_Store
 .venv/
+guests/management/liste_invites.csv
+/data
