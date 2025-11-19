@@ -33,6 +33,15 @@ class Party(models.Model):
     rehearsal_dinner = models.BooleanField(default=False)
     is_attending = models.BooleanField(default=None, null=True)
     comments = models.TextField(null=True, blank=True)
+    nb_mairie = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name="Nombre de personnes à la mairie",
+    )
+    nb_soiree = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name="Nombre de personnes à la soirée",
+    )
+
 
     def __str__(self):
         return 'Party: {}'.format(self.name)

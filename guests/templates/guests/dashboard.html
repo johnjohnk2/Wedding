@@ -118,6 +118,10 @@
                 {% with guest_list=guests_without_meals %}
                     {% include "guests/partials/guest_list.html" %}
                 {% endwith %}
+            <ul>
+              <li>Mairie : {{ total_mairie }} personnes attendues</li>
+              <li>Soirée : {{ total_soiree }} personnes attendues</li>
+            </ul>
             </div>
         </div>
     </div>

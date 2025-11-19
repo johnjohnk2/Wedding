@@ -46,6 +46,8 @@ def dashboard(request):
     )
     meal_breakdown = attending_guests.exclude(meal=None).values('meal').annotate(count=Count('*'))
     category_breakdown = attending_guests.values('party__category').annotate(count=Count('*'))
+    total_mairie = Party.objects.aggregate(Sum('nb_mairie'))['nb_mairie__sum'] or 0
+    total_soiree = Party.objects.aggregate(Sum('nb_soiree'))['nb_soiree__sum'] or 0
     return render(request, 'guests/dashboard.html', context={
         'couple_name': settings.BRIDE_AND_GROOM,
         'website_url': settings.WEDDING_WEBSITE_URL,        
@@ -63,30 +65,48 @@ def dashboard(request):
         'category_breakdown': category_breakdown,
         'guestlist': Guest.objects.filter(is_attending=True),
         'notcoming': Guest.objects.filter(is_attending=False),
+        'total_mairie': total_mairie,
+        'total_soiree': total_soiree,
     })
 
 
 def invitation(request, invite_id):
     party = guess_party_by_invite_id_or_404(invite_id)
+
     if party.invitation_opened is None:
-        # update if this is the first time the invitation was opened
         party.invitation_opened = datetime.utcnow()
         party.save()
+
+    guests = party.guest_set.all()
+
     if request.method == 'POST':
-        for response in _parse_invite_params(request.POST):
-            guest = Guest.objects.get(pk=response.guest_pk)
-            assert guest.party == party
-            guest.is_attending = response.is_attending
-            guest.meal = response.meal
-            guest.save()
-        if request.POST.get('comments'):
-            comments = request.POST.get('comments')
-            party.comments = comments if not party.comments else '{}; {}'.format(party.comments, comments)
-        party.is_attending = party.any_guests_attending
+        # ici tu as déjà la logique qui met à jour is_attending / meal sur chaque Guest
+
+        # 👉 récupération des champs mairie / soirée
+        nb_mairie = request.POST.get('nb_mairie') or 0
+        nb_soiree = request.POST.get('nb_soiree') or 0
+
+        try:
+            nb_mairie = int(nb_mairie)
+            nb_soiree = int(nb_soiree)
+        except ValueError:
+            nb_mairie = 0
+            nb_soiree = 0
+
+        max_guests = guests.count()
+        # on clippe pour éviter les abus / erreurs
+        nb_mairie = max(0, min(nb_mairie, max_guests))
+        nb_soiree = max(0, min(nb_soiree, max_guests))
+
+        party.nb_mairie = nb_mairie
+        party.nb_soiree = nb_soiree
         party.save()
-        return HttpResponseRedirect(reverse('rsvp-confirm', args=[invite_id]))
+
+        # puis tu continues comme avant (redirection vers la page de confirmation)
+        return redirect('invitation-thanks', invite_id=party.invitation_id)
     return render(request, template_name='guests/invitation.html', context={
         'party': party,
+        'guests': guests,
         'meals': MEALS,
         'couple_name' : settings.BRIDE_AND_GROOM,
         'website_url': settings.WEDDING_WEBSITE_URL,        

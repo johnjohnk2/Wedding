@@ -41,7 +41,10 @@ CSRF_TRUSTED_ORIGINS = [
     "http://example.com",
     'https://127.0.0.1'
 ]
-
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+USE_X_FORWARDED_HOST = True
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 
