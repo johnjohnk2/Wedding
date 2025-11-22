@@ -2,7 +2,6 @@
 *.sw[op]
 .idea*
 *.pyc
-localsettings.py
 *.sqlite3
 static_root
 _working/
