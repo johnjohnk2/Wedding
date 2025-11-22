@@ -39,7 +39,6 @@
     <header id="main-header">
         <div class="header-content">
             <div class="header-content-inner">
-                <h1>Mariage de Juliette et Jonathan</h1>
                 {% comment %}
                 <hr>
                 <h2>It's wedding week!</h2>
@@ -50,6 +49,7 @@
             </div>
         </div>
     </header>
+
     <section class="bg-info" id="welcome">
         <div class="container">
             <div class="row">
@@ -61,9 +61,10 @@
                     </p>
                     <p>
                         Si vous cherchez des infos sur le déroulé du mariage, vous êtes au bon endroit.
-                        Vous trouverez ci-dessous tous les détails concernant
-                         <a href="#event" class="page-scroll">la mairie</a>
-                        et <a href="#saturday-event" class="page-scroll">la cérémonie</a>.
+                        Vous trouverez tous les détails concernant
+                        <a href="#event" class="page-scroll">la mairie</a>,
+                        <a href="#houppa-event" class="page-scroll">la houppa</a>
+                        et <a href="#soiree-event" class="page-scroll">la soirée</a>.
                     </p>
                     <p>
                         On a hâte de vous retrouver et de célébrer ça ensemble !
@@ -73,9 +74,12 @@
             </div>
         </div>
     </section>
+
     <section class="no-padding" id="navigation">
         <div class="container-fluid">
             <div class="row no-gutter">
+
+                <!-- Mairie -->
                 <div class="col-lg-4 col-sm-6">
                     <a href="#event" class="portfolio-box page-scroll">
                         <img src="{% static 'bigday/images/ravine-nav.jpg' %}" class="img-responsive" alt="">
@@ -88,39 +92,41 @@
                         </div>
                     </a>
                 </div>
+
+                <!-- Houppa -->
                 <div class="col-lg-4 col-sm-6">
-                    <a href="#niagara" class="portfolio-box page-scroll">
-                        <img src="{% static 'bigday/images/prince-of-wales-hotel-nav.jpg' %}" class="img-responsive" alt="">
+                    <a href="#houppa-event" class="portfolio-box page-scroll">
+                        <img src="{% static 'bigday/images/syna.jpg' %}" class="img-responsive" alt="">
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
                                 <div class="project-name">
-                                    Cérémonie
+                                    Houppa
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
+
+                <!-- Soirée -->
+                <div class="col-lg-4 col-sm-6">
+                    <a href="#soiree-event" class="portfolio-box page-scroll">
+                        <img src="{% static 'bigday/images/prince-of-wales-hotel-nav.jpg' %}" class="img-responsive" alt="">
+                        <div class="portfolio-box-caption">
+                            <div class="portfolio-box-caption-content">
+                                <div class="project-name">
+                                    Soirée
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
             </div>
         </div>
     </section>
+
     {% include 'partials/event.html' %}
-    <section id="niagara">
-        {% include 'partials/niagara.html' %}
-    </section>
-{% comment %}
-        {% include 'partials/wedding-party.html' %}
-{% endcomment %}
-    <section id="other-stuff" class="bg-primary">
-        {% include 'partials/misc.html' %}
-    </section>
-    <section id="gifts">
-        {% include 'partials/gifts.html' %}
-    </section>
-    <section id="story" class="bg-dark">
-        {% include 'partials/story.html' %}
-    </section>
-    {% include 'partials/proposal.html' %}
-    {% include 'partials/save-the-dates.html' %}
+
     <section id="contact" class="bg-dark">
         <div class="container">
             <div class="row">
@@ -138,6 +144,7 @@
     </section>
     {% endblock %}
 {% endblock %}
+
 {% block page_js %}
     <!-- Plugin JavaScript -->
     <!-- Easing is for the vertical scroll animations -->

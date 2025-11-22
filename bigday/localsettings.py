@@ -12,7 +12,7 @@ DEFAULT_WEDDING_REPLY_EMAIL = 'julietteah@hotmail.fr'
 WEDDING_CC_LIST = []
 
 # your names
-BRIDE_AND_GROOM = 'J&J'
+BRIDE_AND_GROOM = 'J&J '
 # the location of your wedding
 WEDDING_LOCATION = 'Paris'
 # the date of your wedding
