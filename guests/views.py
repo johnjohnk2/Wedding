@@ -62,17 +62,10 @@ def dashboard(request):
 
 def invitation(request, invite_id):
     party = guess_party_by_invite_id_or_404(invite_id)
-
-    if party.invitation_opened is None:
-        party.invitation_opened = datetime.utcnow()
-        party.save()
-
     guests = party.guest_set.all()
 
     if request.method == 'POST':
-        # ici tu as déjà la logique qui met à jour is_attending / meal sur chaque Guest
-
-        # 👉 récupération des champs mairie / soirée
+        # récupération des champs mairie / soirée
         nb_mairie = request.POST.get('nb_mairie') or 0
         nb_soiree = request.POST.get('nb_soiree') or 0
 
@@ -84,23 +77,31 @@ def invitation(request, invite_id):
             nb_soiree = 0
 
         max_guests = guests.count()
-        # on clippe pour éviter les abus / erreurs
+
         nb_mairie = max(0, min(nb_mairie, max_guests))
         nb_soiree = max(0, min(nb_soiree, max_guests))
 
         party.nb_mairie = nb_mairie
         party.nb_soiree = nb_soiree
-        party.is_attending = party.any_guests_attending
+
+        # ✔️ un foyer "vient" s'il a au moins une personne à un des deux events
+        party.is_attending = (nb_mairie + nb_soiree) > 0
+
         party.save()
 
-        # puis tu continues comme avant (redirection vers la page de confirmation)
+        # ✔️ mettre à jour chaque Guest pour refléter la décision du foyer
+        guests.update(is_attending=party.is_attending)
+
         return HttpResponseRedirect(reverse('rsvp-confirm', args=[invite_id]))
-    return render(request, template_name='guests/invitation.html', context={
+
+    return render(request, 'guests/invitation.html', {
         'party': party,
         'guests': guests,
-        'couple_name' : settings.BRIDE_AND_GROOM,
-        'website_url': settings.WEDDING_WEBSITE_URL,        
+        'couple_name': settings.BRIDE_AND_GROOM,
+        'website_url': settings.WEDDING_WEBSITE_URL,
     })
+
+
 
 
 InviteResponse = namedtuple('InviteResponse', ['guest_pk', 'is_attending'])

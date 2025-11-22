@@ -11,9 +11,4 @@ class Migration(migrations.Migration):
         ('guests', '0008_auto_20160214_1642'),
     ]
 
-    operations = [
-        migrations.AddField(
-            model_name='guest',
-            field=models.CharField(blank=True, choices=[('beef', 'Cow'), ('chicken', 'Chicken'), ('vegetarian', 'Vegetable')], max_length=20, null=True),
-        ),
-    ]
+    operations = []

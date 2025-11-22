@@ -4,21 +4,22 @@ from .models import Guest, Party
 
 class GuestInline(admin.TabularInline):
     model = Guest
-    fields = ('first_name', 'last_name', 'email', 'is_attending', 'is_child')
-    readonly_fields = ('first_name', 'last_name', 'email')
+    extra = 0
+    fields = ("first_name", "last_name", "is_child", "is_attending")
+    readonly_fields = ("first_name", "last_name")
 
 
+@admin.register(Party)
 class PartyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'type', 'category', 'save_the_date_sent', 'invitation_sent', 'rehearsal_dinner', 'invitation_opened',
-                    'is_invited', 'is_attending')
-    list_filter = ('type', 'category', 'is_invited', 'is_attending', 'rehearsal_dinner', 'invitation_opened')
+    list_display = ("name", "nb_mairie", "nb_soiree", "is_attending")
+    list_filter = ("is_attending",)
+    search_fields = ("name",)
     inlines = [GuestInline]
+    readonly_fields = ("invitation_id", "nb_mairie", "nb_soiree", "is_attending")
 
-
+@admin.register(Guest)
 class GuestAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'party', 'email', 'is_attending', 'is_child')
-    list_filter = ('is_attending', 'is_child', 'party__is_invited', 'party__category', 'party__rehearsal_dinner')
+    list_display = ("first_name", "last_name", "party", "is_child", "is_attending")
+    list_filter = ("is_child", "is_attending")
+    search_fields = ("first_name", "last_name", "party__name")
 
-
-admin.site.register(Party, PartyAdmin)
-admin.site.register(Guest, GuestAdmin)
